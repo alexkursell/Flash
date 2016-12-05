@@ -59,13 +59,18 @@ class MainWindow(tk.Frame):
             anchor="w",
             justify='left')
         
-        self.statusLabel.pack(fill="both")
+        self.statusLabel.pack(fill="both", side="left")
+
+        self.levelLabel = tk.Label(self,
+            anchor="e",
+            borderwidth=0)
+        self.levelLabel.pack(fill="both", side="right")
 
     def displayText(self, text):
         self.statusLabel.config(text=text)
 
     def load_maze(self):
-        self.maze = RandomMaze(levels=1, height=10, width=10)
+        self.maze = RandomMaze(levels=10, height=10, width=10)
 
     def load_level(self, level):
         self.level = level
@@ -74,6 +79,7 @@ class MainWindow(tk.Frame):
             height = len(self.maze.asciimazes[level]) * self.BLOCK_SIZE)
 
         mazeGrid = self.maze.asciimazes
+        self.levelLabel.config(text="Level %i/%i" % (level + 1, len(mazeGrid)))
 
         for x in range(len(mazeGrid[level])):
             for y in range(len(mazeGrid[level][0])):
