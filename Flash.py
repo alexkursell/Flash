@@ -2,10 +2,6 @@ from maze_generator_3D import RandomMaze
 from collections import namedtuple
 import tkinter as tk
 
-#maze = RandomMaze(2, 5, 5)
-#print(maze.blockify("█", " ", "↑", "↓", "↕"))
-
-
 class MainWindow(tk.Frame):
     def __init__(self, master):
         super().__init__()
@@ -26,6 +22,8 @@ class MainWindow(tk.Frame):
                             "w"    :False,
                             "s"    :False}
 
+        
+        #Using a namedtuple for more understandable reference to various block attributes
         self.Block = namedtuple("Block", ["x1", "y1", "x2", "y2", "type"])
 
 
@@ -41,26 +39,30 @@ class MainWindow(tk.Frame):
 
 
     def create_widgets(self):
+        #Create canvas that displays the game area.
         self.w = tk.Canvas(self)
         self.w.pack()
 
+        #Bind all canvas keypresses and keyreleases to proper methods
         self.w.bind_all("<KeyPress>", self.on_key_press)
         self.w.bind_all("<KeyRelease>", self.on_key_release)
 
+        #Create player rectangle, start in top right cell.
         self.r = self.w.create_rectangle(self.BLOCK_SIZE,
            self.BLOCK_SIZE,
            self.BLOCK_SIZE * 2,
            self.BLOCK_SIZE * 2,
            fill="green")
 
+        #Create label to show messages
         self.statusLabel = tk.Label(self, 
             text="Reach the bottom right!",
             borderwidth=0,
             anchor="w",
             justify='left')
-        
         self.statusLabel.pack(fill="both", side="left")
 
+        #Create label to show the current level.
         self.levelLabel = tk.Label(self,
             anchor="e",
             borderwidth=0)
@@ -98,11 +100,17 @@ class MainWindow(tk.Frame):
                     continue #Space
 
                 block = self.lookup_cell(x, y)
-                self.w.create_rectangle(block.x1, block.y1, block.x2, block.y2, fill=color)
+
+                if block[:4] == tuple(self.w.coords(self.r)):
+                    stipple="gray75"
+                    print("y")
+                else:
+                    stipple=""
+                self.w.create_rectangle(block.x1, block.y1, block.x2, block.y2, fill=color, stipple=stipple)
 
 
     def event_loop(self):
-        if self.isLooping:
+        if self.isLooping: #Flag to allow pausing
             for key in self.keysPressed.keys():
                 if self.keysPressed[key]:
                     self.move_rect(key)
@@ -117,14 +125,15 @@ class MainWindow(tk.Frame):
 
     def move_rect(self, key):
         dist = self.BLOCK_SIZE / 2
+        
         if key == "Left":
-            self.move(self.r, dist * -1, 0)
+            self.move(self.r, dist * -1, 0, 0)
         elif key == "Right":
-            self.move(self.r, dist, 0)
+            self.move(self.r, dist, 0, 0)
         elif key == "Up":
-            self.move(self.r, 0, dist * -1)
+            self.move(self.r, 0, dist * -1, 0)
         elif key == "Down":
-            self.move(self.r, 0, dist)
+            self.move(self.r, 0, dist, 0)
         elif key == "w":
             self.keysPressed["w"] = False
             self.move(self.r, 0, 0, -1)
@@ -159,7 +168,7 @@ class MainWindow(tk.Frame):
             self.maze.asciimazes[self.level][x][y])
 
 
-    def move(self, itemId, xmov, ymov, zmov=0):
+    def move(self, itemId, xmov, ymov, zmov):
         current = self.w.coords(itemId)
 
         xsign = xmov // abs(xmov) if xmov != 0 else 0
