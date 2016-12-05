@@ -61,7 +61,6 @@ class MainWindow(tk.Frame):
 
         self.setupFrame.pack(anchor="center")
 
-
         #Create canvas that displays the game area.
         self.w = tk.Canvas(self)
         self.w.pack()
@@ -88,7 +87,7 @@ class MainWindow(tk.Frame):
         self.statusLabel.config(text=text)
 
     def new_maze(self, event):
-        try: #Do nothing if user input is screwy.
+        try: #Do nothing if user input is screwy. Restricted to certain bounds.
             levels = max(1, min(20, int(self.levelEntry.get())))
             height = max(2, min(25, int(self.heightEntry.get())))
             width = max(2, min(40, int(self.widthEntry.get())))
@@ -179,6 +178,8 @@ class MainWindow(tk.Frame):
         self.keysPressed[event.keysym] = False
 
     def move_rect(self, key):
+        #Move a half-block width every frame.
+        #This is the reason BLOCK_SIZE must be a multiple of 2.
         dist = self.BLOCK_SIZE / 2
         
         if key == "Left":
