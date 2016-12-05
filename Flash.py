@@ -128,7 +128,6 @@ class MainWindow(tk.Frame):
         return nearWalls
 
 
-
     def lookup_cell(self, x, y):
         x, y = int(x), int(y)
         return self.Block(
@@ -153,18 +152,23 @@ class MainWindow(tk.Frame):
 
         #Find what cells occupied by the current position are also
         #occupied by a wall
-        
         nearWalls = self.intersected_blocks(current)
         
         for block in nearWalls:
+            #For each wall, step back the movement until there is no collision
             if block.type == 'w':
-                #For each of these, step back the movement untill there is no collision
                 while self.is_collision(current, block):
                     current = self.Block(current.x1 - xsign,
                         current.y1 - ysign,
                         current.x2 - xsign,
                         current.y2 - ysign,
                         'p')
+
+            
+            #For each movement block (up, down, or both), check if
+            #movement in that direction was requested. If it was,
+            #load the correct level and set the new position to be exactly
+            #equal to the movement block.
             elif block.type in 'udb' and zmov != 0:
                 if zmov == 1 and block.type == 'u':
                     continue
@@ -184,10 +188,6 @@ class MainWindow(tk.Frame):
 
                 self.load_level(self.level + zmov)
 
-
-
-
-        
         self.w.coords(itemId, (current.x1, current.y1, current.x2, current.y2))
 
 
