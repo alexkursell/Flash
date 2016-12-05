@@ -12,10 +12,12 @@ class MainWindow(tk.Frame):
 
         self.master = master
         self.master.resizable(0, 0)
-        self.master.wm_title("Flash 2: Electric Bugaloo")
+        self.master.wm_title("Flash!")
 
         self.FRAMES_PER_SECOND = 40
         self.BLOCK_SIZE = 10
+
+        self.isLooping = True
 
         self.keysPressed = {"Left" :False,
                             "Right":False,
@@ -24,7 +26,6 @@ class MainWindow(tk.Frame):
                             "w"    :False,
                             "s"    :False}
 
-        self.blocks = []
         self.Block = namedtuple("Block", ["x1", "y1", "x2", "y2", "type"])
 
 
@@ -35,7 +36,7 @@ class MainWindow(tk.Frame):
         print("MAZE LOADED")
         self.load_level(0)
         print("LEVEL LOADED")
-        self.queue_loop()
+        self.event_loop()
         print("LEVEL START")
 
 
@@ -53,7 +54,7 @@ class MainWindow(tk.Frame):
            fill="green")
 
     def load_maze(self):
-        self.maze = RandomMaze(levels=10, height=10, width=10)
+        self.maze = RandomMaze(levels=1, height=3, width=3)
 
     def load_level(self, level):
         self.level = level
@@ -65,28 +66,31 @@ class MainWindow(tk.Frame):
 
         for x in range(len(mazeGrid[level])):
             for y in range(len(mazeGrid[level][0])):
-                if mazeGrid[level][x][y] == 's':
-                    continue
-                elif mazeGrid[level][x][y] == 'w':
+                #The bottom right corner on the last level is the "goal" block.
+                if mazeGrid[level][x][y] == 'f':
+                    color = "orange"
+                elif mazeGrid[level][x][y] == 'w':#Wall
                     color = "black"
-                elif mazeGrid[level][x][y] == 'u':
+                elif mazeGrid[level][x][y] == 'u':#Up
                     color = "red"
-                elif mazeGrid[level][x][y] == 'd':
+                elif mazeGrid[level][x][y] == 'd':#Down
                     color = "blue"
-                elif mazeGrid[level][x][y] == 'b':
+                elif mazeGrid[level][x][y] == 'b':#Both
                     color = "purple"
+                else:
+                    continue #Space
 
                 block = self.lookup_cell(x, y)
-                self.blocks.append(block)
                 self.w.create_rectangle(block.x1, block.y1, block.x2, block.y2, fill=color)
 
 
-    def queue_loop(self):
-        for key in self.keysPressed.keys():
-            if self.keysPressed[key]:
-                self.move_rect(key)
+    def event_loop(self):
+        if self.isLooping:
+            for key in self.keysPressed.keys():
+                if self.keysPressed[key]:
+                    self.move_rect(key)
 
-        self.after(1000 // self.FRAMES_PER_SECOND, self.queue_loop)
+        self.after(1000 // self.FRAMES_PER_SECOND, self.event_loop)
 
     def on_key_press(self, event):
         self.keysPressed[event.keysym] = True
@@ -144,6 +148,7 @@ class MainWindow(tk.Frame):
         xsign = xmov // abs(xmov) if xmov != 0 else 0
         ysign = ymov // abs(ymov) if ymov != 0 else 0
 
+        # 'P' for player.
         current = self.Block(current[0] + xmov,
             current[1] + ymov,
             current[2] + xmov,
@@ -187,6 +192,12 @@ class MainWindow(tk.Frame):
 
 
                 self.load_level(self.level + zmov)
+
+            elif block.type == 'f':
+                self.w.create_rectangle(0, 0, current.x2 + 100, current.y2 + 100, stipple="gray25", fill="gray")
+                current = block
+                self.isLooping = False
+                print("WINNER")
 
         self.w.coords(itemId, (current.x1, current.y1, current.x2, current.y2))
 

@@ -12,7 +12,7 @@ class RandomMaze(object):
         self.asciimazes = []
         
         self.generate_maze()
-        self.blockify('w', 's', 'u', 'd', 'b')
+        self.blockify('w', 's', 'u', 'd', 'b', 'f')
 
     def generate_maze(self):
         #Uses iterative depth-first search, using a stack, to generate a random maze
@@ -54,7 +54,7 @@ class RandomMaze(object):
     def add_tuple(self, t1, t2):
         return tuple([t1[x] + t2[x] for x in range(len(t1))])
 
-    def blockify(self, wallchr, spacechr, upchr, downchr, bothchr):
+    def blockify(self, wallchr, spacechr, upchr, downchr, bothchr, flagchr):
         asciimaze = [[[wallchr for z in range(self.width * 2 + 1)]
                       for y in range(self.height * 2 + 1)]
                      for x in range(self.levels)]
@@ -86,11 +86,11 @@ class RandomMaze(object):
 
                     #'Tunnel' to connected adjacent cells.
                     for d in a[x][y][z]:
-                        if d[0] != 0:
+                        if d[0] != 0: 
                             continue
                         t = self.add_tuple((x, y * 2 + 1, z * 2 + 1), d)
                         asciimaze[t[0]][t[1]][t[2]] = spacechr
-                        
+
 
         self.asciimaze = ""
         self.asciimazes = []
@@ -100,7 +100,10 @@ class RandomMaze(object):
             for y in x:
                 self.asciimazes[-1].append(y)
                 self.asciimaze += "".join(y) + "\n"
-
+        
+        #The bottom right corner on the last level is the "goal" block.
+        self.asciimazes[-1][-2][-2] = flagchr
+        
         return self.asciimaze
                         
                         
@@ -109,8 +112,8 @@ class RandomMaze(object):
 if __name__ == "__main__":
     maze = RandomMaze(2, 4, 4)
     print(maze.blockify("█", " ", "↑", "↓", "↕"))
-    pprint(maze.asciimazes)
-    print()
+    #pprint(maze.asciimazes)
+    #print()
 
 
 
