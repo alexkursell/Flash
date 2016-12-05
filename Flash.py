@@ -35,7 +35,6 @@ class MainWindow(tk.Frame):
         self.event_loop()
         print("EVENT LOOP STARTED")
 
-
     def create_widgets(self):
         #Create panel for specifying new maze dimensions.
         self.setupFrame = tk.Frame(self)
@@ -162,7 +161,6 @@ class MainWindow(tk.Frame):
                 
                 self.w.create_rectangle(block.x1, block.y1, block.x2, block.y2, fill=color, stipple=stipple)
 
-
     def event_loop(self):
         if self.isLooping: #Flag to allow pausing
             for key in self.keysPressed.keys():
@@ -213,7 +211,6 @@ class MainWindow(tk.Frame):
         nearWalls.append(self.lookup_cell(cur.x2 // self.BLOCK_SIZE, cur.y2 // self.BLOCK_SIZE))
         return nearWalls
 
-
     def lookup_cell(self, x, y):
         x, y = int(x), int(y)
         return self.Block(
@@ -222,7 +219,6 @@ class MainWindow(tk.Frame):
             (x + 1) * self.BLOCK_SIZE,
             (y + 1) * self.BLOCK_SIZE,
             self.maze.asciimazes[self.level][x][y])
-
 
     def move(self, itemId, xmov, ymov, zmov):
         current = self.w.coords(itemId)
