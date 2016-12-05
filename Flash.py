@@ -53,7 +53,7 @@ class MainWindow(tk.Frame):
            fill="green")
 
     def load_maze(self):
-        self.maze = RandomMaze(10, 10, 10)
+        self.maze = RandomMaze(levels=10, height=10, width=10)
 
     def load_level(self, level):
         self.level = level
@@ -169,7 +169,6 @@ class MainWindow(tk.Frame):
                 if zmov == 1 and block.type == 'u':
                     continue
                 elif zmov == -1 and block.type == 'd':
-                    print("NO")
                     continue
                 
                 current = block

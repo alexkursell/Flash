@@ -4,7 +4,7 @@ from pprint import pprint
 
 
 class RandomMaze(object):
-    def __init__(self, levels, height, width):
+    def __init__(self, levels=1, height=10, width=10):
         self.levels = levels
         self.height = height
         self.width = width
