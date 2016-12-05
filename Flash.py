@@ -53,8 +53,19 @@ class MainWindow(tk.Frame):
            self.BLOCK_SIZE * 2,
            fill="green")
 
+        self.statusLabel = tk.Label(self, 
+            text="Reach the bottom right!",
+            borderwidth=0,
+            anchor="w",
+            justify='left')
+        
+        self.statusLabel.pack(fill="both")
+
+    def displayText(self, text):
+        self.statusLabel.config(text=text)
+
     def load_maze(self):
-        self.maze = RandomMaze(levels=1, height=3, width=3)
+        self.maze = RandomMaze(levels=1, height=10, width=10)
 
     def load_level(self, level):
         self.level = level
@@ -183,21 +194,26 @@ class MainWindow(tk.Frame):
                 current = block
 
                 self.w.delete("all")
-
                 self.r = self.w.create_rectangle(block.x1,
                    block.y1,
                    block.x2,
                    block.y2,
                    fill="green")
 
-
                 self.load_level(self.level + zmov)
 
+            #If there is an intersection with a flag block, that means we've won!
+            #Gray screen, pause event_loop, and display win message
             elif block.type == 'f':
-                self.w.create_rectangle(0, 0, current.x2 + 100, current.y2 + 100, stipple="gray25", fill="gray")
+                self.w.create_rectangle(0, 0, 
+                    current.x2 + self.BLOCK_SIZE * 3, 
+                    current.y2 + self.BLOCK_SIZE * 3, 
+                    stipple="gray25", 
+                    fill="gray")
+
                 current = block
                 self.isLooping = False
-                print("WINNER")
+                self.displayText("Winner!")
 
         self.w.coords(itemId, (current.x1, current.y1, current.x2, current.y2))
 
