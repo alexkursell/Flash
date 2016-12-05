@@ -56,7 +56,7 @@ class MainWindow(tk.Frame):
 
         #Create label to show messages
         self.statusLabel = tk.Label(self, 
-            text="Reach the bottom right!",
+            text="Reach the bottom bottom right!",
             borderwidth=0,
             anchor="w",
             justify='left')
@@ -101,11 +101,13 @@ class MainWindow(tk.Frame):
 
                 block = self.lookup_cell(x, y)
 
+                #If the coordinates of the block match exactly with those of the player
+                #rect, we have just used it and it should be stippled.
                 if block[:4] == tuple(self.w.coords(self.r)):
                     stipple="gray75"
-                    print("y")
                 else:
                     stipple=""
+                
                 self.w.create_rectangle(block.x1, block.y1, block.x2, block.y2, fill=color, stipple=stipple)
 
 
