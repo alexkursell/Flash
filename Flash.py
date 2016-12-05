@@ -15,7 +15,7 @@ class MainWindow(tk.Frame):
         #Block size must be even.
         self.BLOCK_SIZE = 14
 
-        self.isLooping = True
+        self.isLooping = False
 
         self.keysPressed = {"Left" :False,
                             "Right":False,
@@ -32,15 +32,36 @@ class MainWindow(tk.Frame):
         self.pack(fill=tk.BOTH, expand=1)
         self.create_widgets()
         print("WIDGETS LOADED")
-        self.load_maze()
-        print("MAZE LOADED")
-        self.load_level(0)
-        print("LEVEL LOADED")
         self.event_loop()
-        print("LEVEL START")
+        print("EVENT LOOP STARTED")
 
 
     def create_widgets(self):
+        #Create panel for specifying new maze dimensions.
+        self.setupFrame = tk.Frame(self)
+
+        self.levelLabel = tk.Label(self.setupFrame, text="# Levels:")
+        self.levelLabel.pack(side="left")
+        self.levelEntry = tk.Entry(self.setupFrame, width=2)
+        self.levelEntry.pack(side="left")
+
+        self.widthLabel = tk.Label(self.setupFrame, text="Width:")
+        self.widthLabel.pack(side="left")
+        self.widthEntry = tk.Entry(self.setupFrame, width=2)
+        self.widthEntry.pack(side="left")
+
+        self.heightLabel = tk.Label(self.setupFrame, text="Height:")
+        self.heightLabel.pack(side="left")
+        self.heightEntry = tk.Entry(self.setupFrame, width=2)
+        self.heightEntry.pack(side="left")
+
+        self.generateButton = tk.Button(self.setupFrame, text="Generate!")
+        self.generateButton.bind("<Button-1>", self.new_maze)
+        self.generateButton.pack(side="left")
+
+        self.setupFrame.pack(anchor="center")
+
+
         #Create canvas that displays the game area.
         self.w = tk.Canvas(self)
         self.w.pack()
@@ -49,16 +70,9 @@ class MainWindow(tk.Frame):
         self.w.bind_all("<KeyPress>", self.on_key_press)
         self.w.bind_all("<KeyRelease>", self.on_key_release)
 
-        #Create player rectangle, start in top right cell.
-        self.r = self.w.create_rectangle(self.BLOCK_SIZE,
-           self.BLOCK_SIZE,
-           self.BLOCK_SIZE * 2,
-           self.BLOCK_SIZE * 2,
-           fill="green")
-
         #Create label to show messages
         self.statusLabel = tk.Label(self, 
-            text="Reach the bottom bottom right!",
+            text="Specify the maze dimensions to start!",
             borderwidth=0,
             anchor="w",
             justify='left')
@@ -70,17 +84,54 @@ class MainWindow(tk.Frame):
             borderwidth=0)
         self.levelLabel.pack(fill="both", side="right")
 
-    def displayText(self, text):
+    def display_text(self, text):
         self.statusLabel.config(text=text)
 
-    def load_maze(self):
-        self.maze = RandomMaze(levels=10, height=10, width=10)
+    def new_maze(self, event):
+        try: #Do nothing if user input is screwy.
+            levels = max(1, min(20, int(self.levelEntry.get())))
+            height = max(2, min(25, int(self.heightEntry.get())))
+            width = max(2, min(40, int(self.widthEntry.get())))
+        except:
+            return
+        
+        #Display loading message
+        self.display_text("Loading new level...")
+        
+        #Clear input boxes
+        self.levelEntry.delete(0, "end")
+        self.heightEntry.delete(0, "end")
+        self.widthEntry.delete(0, "end")
+
+        #Reset canvas.
+        self.w.delete("all")
+        
+        #Create player rectangle, start in top right cell.
+        self.r = self.w.create_rectangle(self.BLOCK_SIZE,
+           self.BLOCK_SIZE,
+           self.BLOCK_SIZE * 2,
+           self.BLOCK_SIZE * 2,
+           fill="green")
+        
+        #Load new maze, load first level, begin event loop
+        self.load_maze(levels, width, height)
+        self.load_level(0)
+        self.isLooping = True
+
+        #Set focus on canvas
+        self.w.focus_set()
+
+        #Display goal message.
+        self.display_text("Reach the lowest bottom right corner!")
+
+    def load_maze(self, levels, width, height):
+        self.maze = RandomMaze(levels=levels, height=width, width=height)
 
     def load_level(self, level):
         self.level = level
         
-        self.w.config(width=len(self.maze.asciimazes[level][0]) * self.BLOCK_SIZE,
-            height = len(self.maze.asciimazes[level]) * self.BLOCK_SIZE)
+        self.w.config(height=len(self.maze.asciimazes[level][0]) * self.BLOCK_SIZE,
+            width=len(self.maze.asciimazes[level]) * self.BLOCK_SIZE)
 
         mazeGrid = self.maze.asciimazes
         self.levelLabel.config(text="Level %i/%i" % (level + 1, len(mazeGrid)))
@@ -232,7 +283,7 @@ class MainWindow(tk.Frame):
 
                 current = block
                 self.isLooping = False
-                self.displayText("Winner!")
+                self.display_text("Winner!")
 
         self.w.coords(itemId, (current.x1, current.y1, current.x2, current.y2))
 
