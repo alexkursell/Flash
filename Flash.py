@@ -11,7 +11,9 @@ class MainWindow(tk.Frame):
         self.master.wm_title("Flash!")
 
         self.FRAMES_PER_SECOND = 40
-        self.BLOCK_SIZE = 10
+        
+        #Block size must be even.
+        self.BLOCK_SIZE = 14
 
         self.isLooping = True
 
