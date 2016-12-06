@@ -37,28 +37,32 @@ class MainWindow(tk.Frame):
 
     def create_widgets(self):
         #Create panel for specifying new maze dimensions.
-        self.setupFrame = tk.Frame(self)
+        self.setupFrame = tk.Frame(self, borderwidth=2, relief="ridge")
+
+        self.helpButton = tk.Button(self.setupFrame, text="Help")
+        self.helpButton.bind("<Button-1>", self.display_help_window)
+        self.helpButton.pack(side="left")
 
         self.levelLabel = tk.Label(self.setupFrame, text="# Levels:")
         self.levelLabel.pack(side="left")
         self.levelEntry = tk.Entry(self.setupFrame, width=2)
-        self.levelEntry.pack(side="left")
+        self.levelEntry.pack(side="left", fill="x", expand=True)
 
         self.widthLabel = tk.Label(self.setupFrame, text="Width:")
         self.widthLabel.pack(side="left")
         self.widthEntry = tk.Entry(self.setupFrame, width=2)
-        self.widthEntry.pack(side="left")
+        self.widthEntry.pack(side="left", fill="x", expand=True)
 
         self.heightLabel = tk.Label(self.setupFrame, text="Height:")
         self.heightLabel.pack(side="left")
         self.heightEntry = tk.Entry(self.setupFrame, width=2)
-        self.heightEntry.pack(side="left")
+        self.heightEntry.pack(side="left", fill="x", expand=True)
 
         self.generateButton = tk.Button(self.setupFrame, text="Generate!")
         self.generateButton.bind("<Button-1>", self.new_maze)
         self.generateButton.pack(side="left")
 
-        self.setupFrame.pack(anchor="center")
+        self.setupFrame.pack(anchor="center", fill="x")
 
         #Create canvas that displays the game area.
         self.w = tk.Canvas(self)
@@ -84,6 +88,10 @@ class MainWindow(tk.Frame):
 
     def display_text(self, text):
         self.statusLabel.config(text=text)
+
+    def display_help_window(self, event=None):
+        w = tk.Toplevel(self)
+        w.wm_title("Help")
 
     def new_maze(self, event):
         try: #Do nothing if user input is screwy. Restricted to certain bounds.
