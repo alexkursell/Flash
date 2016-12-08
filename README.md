@@ -1,10 +1,10 @@
 # Flash
 Python3 multi-level maze game using Tkinter. Uses only the python standard library (for now!).
 
-# Goal
+### Goal
 Get form the top left corner on level 1 (the top level) to the orange block on the bottom-left corner of the bottom level.
 
-# Controls
+### Controls
 ↑ - Move up
 ↓ - Move down
 ← - Move left
@@ -14,7 +14,7 @@ s - Move down a level.
 
 (w and s only work when on the appropriate staircase)
 
-# Tiles
+### Tiles
 White  - Free space
 Black  - Wall
 Blue   - 'Down' staircase
