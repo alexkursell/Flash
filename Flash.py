@@ -15,6 +15,7 @@ class MainWindow(tk.Frame):
         #Block size must be even.
         self.BLOCK_SIZE = 14
 
+        #Flag to start and stop event loop.
         self.isLooping = False
 
         self.keysPressed = {"Left" :False,
@@ -31,9 +32,7 @@ class MainWindow(tk.Frame):
 
         self.pack(fill=tk.BOTH, expand=1)
         self.create_widgets()
-        print("WIDGETS LOADED")
         self.event_loop()
-        print("EVENT LOOP STARTED")
 
     def create_widgets(self):
         #Create panel for specifying new maze dimensions.
@@ -93,18 +92,22 @@ class MainWindow(tk.Frame):
         w = tk.Toplevel(self)
         w.wm_title("Help")
 
+        #Open README.md (using this allows me to maintain one help file for everything)
         helpString = open("README.md", "r", encoding="utf-8").readlines()
+        
+        #README.md is formatted in markdown, replace # headers with ----dashes----
+        #Also remove extra newlines
         for x in range(len(helpString)):
             if helpString[x][0] == "#":
                 helpString[x] = helpString[x].replace("#", "").strip()
                 dashes = "-" * (10 - len(helpString[x]) // 2)
                 helpString[x] = dashes + helpString[x] + dashes + "\n"
+            if helpString[x][0] == "\n" and x != len(helpString) - 1 and helpString[x + 1][0] != "#":
+                helpString[x] = ""
 
 
         helpString = "".join(helpString)
-
-        print(helpString)
-        tk.Label(w, text=helpString, wraplength=400, justify="left").pack(fill="both")
+        tk.Label(w, text=helpString, wraplength=300, justify="left").pack(fill="both")
 
     def new_maze(self, event):
         try: #Do nothing if user input is screwy. Restricted to certain bounds.
@@ -144,17 +147,21 @@ class MainWindow(tk.Frame):
         self.display_text("Reach the lowest bottom right corner!")
 
     def load_maze(self, levels, width, height):
+        #The way mazes are stored in an array is slightly different than how they are displayed
+        #To compensate, width=height and height=width
         self.maze = RandomMaze(levels=levels, height=width, width=height)
 
     def load_level(self, level):
         self.level = level
         
+        #Set new dimensions of the canvas based on the size of the maze.
         self.w.config(height=len(self.maze.asciimazes[level][0]) * self.BLOCK_SIZE,
             width=len(self.maze.asciimazes[level]) * self.BLOCK_SIZE)
 
         mazeGrid = self.maze.asciimazes
         self.levelLabel.config(text="Level %i/%i" % (level + 1, len(mazeGrid)))
 
+        #Iterate through every maze cell and create a new Block if it isn't a space.
         for x in range(len(mazeGrid[level])):
             for y in range(len(mazeGrid[level][0])):
                 #The bottom right corner on the last level is the "goal" block.
@@ -226,6 +233,7 @@ class MainWindow(tk.Frame):
 
     def intersected_blocks(self, cur):
         nearWalls = []
+        #Check the cell that each block corner resides in.
         nearWalls.append(self.lookup_cell(cur.x1 // self.BLOCK_SIZE, cur.y1 // self.BLOCK_SIZE))
         nearWalls.append(self.lookup_cell(cur.x1 // self.BLOCK_SIZE, cur.y2 // self.BLOCK_SIZE))
         nearWalls.append(self.lookup_cell(cur.x2 // self.BLOCK_SIZE, cur.y1 // self.BLOCK_SIZE))
@@ -247,7 +255,7 @@ class MainWindow(tk.Frame):
         xsign = xmov // abs(xmov) if xmov != 0 else 0
         ysign = ymov // abs(ymov) if ymov != 0 else 0
 
-        # 'P' for player.
+        # 'p' for player.
         current = self.Block(current[0] + xmov,
             current[1] + ymov,
             current[2] + xmov,
