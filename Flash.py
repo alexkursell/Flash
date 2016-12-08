@@ -93,6 +93,19 @@ class MainWindow(tk.Frame):
         w = tk.Toplevel(self)
         w.wm_title("Help")
 
+        helpString = open("README.md", "r", encoding="utf-8").readlines()
+        for x in range(len(helpString)):
+            if helpString[x][0] == "#":
+                helpString[x] = helpString[x].replace("#", "").strip()
+                dashes = "-" * (10 - len(helpString[x]) // 2)
+                helpString[x] = dashes + helpString[x] + dashes + "\n"
+
+
+        helpString = "".join(helpString)
+
+        print(helpString)
+        tk.Label(w, text=helpString, wraplength=400, justify="left").pack(fill="both")
+
     def new_maze(self, event):
         try: #Do nothing if user input is screwy. Restricted to certain bounds.
             levels = max(1, min(20, int(self.levelEntry.get())))
