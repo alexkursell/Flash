@@ -2,7 +2,7 @@
 Python3 multi-level maze game using Tkinter. Uses only the python standard library (for now!).
 
 ### Goal
-Get form the top left corner on level 1 (the top level) to the orange block on the bottom-left corner of the bottom level.
+Get from the top left corner on level 1 (the top level) to the orange block on the bottom-right corner of the bottom level.
 
 ### Controls
 ↑ - Move up

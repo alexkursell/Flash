@@ -29,6 +29,9 @@ class MainWindow(tk.Frame):
         #Using a namedtuple for more understandable reference to various block attributes
         self.Block = namedtuple("Block", ["x1", "y1", "x2", "y2", "type"])
 
+        self.cachedLevels = {}
+        
+        self.level = None
 
         self.pack(fill=tk.BOTH, expand=1)
         self.create_widgets()
@@ -125,8 +128,9 @@ class MainWindow(tk.Frame):
         self.heightEntry.delete(0, "end")
         self.widthEntry.delete(0, "end")
 
-        #Reset canvas.
+        #Reset canvas. Delete all cached levels
         self.w.delete("all")
+        self.canvases = {}
         
         #Create player rectangle, start in top right cell.
         self.r = self.w.create_rectangle(self.BLOCK_SIZE,
@@ -153,12 +157,13 @@ class MainWindow(tk.Frame):
 
     def load_level(self, level):
         self.level = level
-        
+      
         #Set new dimensions of the canvas based on the size of the maze.
         self.w.config(height=len(self.maze.asciimazes[level][0]) * self.BLOCK_SIZE,
             width=len(self.maze.asciimazes[level]) * self.BLOCK_SIZE)
 
         mazeGrid = self.maze.asciimazes
+        
         self.levelLabel.config(text="Level %i/%i" % (level + 1, len(mazeGrid)))
 
         #Iterate through every maze cell and create a new Block if it isn't a space.
